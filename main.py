@@ -9,7 +9,7 @@ import audioFileController as afc
 
 sg.theme('SandyBeach')  # Keep things interesting for your users
 
-albums = ['Album', 'Bava Metziah', 'Parshas Hashavuah', 'Moadim', 'Hilchos Tefilla', 'Shiur Klali']
+albums = ['Album', 'Bava Metziah', 'Parshas Hashavuah', 'Moadim', 'Hilchos Tefilla', 'Shiur Klali', 'Mishna Yomis']
 
 artists = ['Artists', 'Moshe Meiselman', 'Avrahami', 'Fishman', 'Klein', 'Shurkin']
 
@@ -17,11 +17,12 @@ layout = [[sg.Text('Year', size=(3, 0)), sg.InputText(key='year')],
           [sg.Combo(albums, default_value=albums[0], key='album')],
           # [sg.Input(key='-IN-')],
           [sg.Combo(artists, default_value=artists[0], key='artist')],
+          [sg.Checkbox('Is Series', default=False, key='is_series')],
           [sg.Text('Title type', size=(20, 1), font='Lucida', justification='left')],
-          [sg.Radio('From file name', 'rd_title', key='fileName'),
-           sg.Radio('Create file name', 'rd_title', key='title')],
-          [sg.Text("Choose a file: "), sg.FileBrowse()],
-          [sg.Text('Title', size=(3, 0)), sg.InputText(key='title')],
+          [sg.Radio('From file name', 'rd_title', key='from_file_name'),
+           sg.Radio('Create file name', 'rd_title', key='from_input_title')],
+          [sg.Text("Choose a file: "), sg.FileBrowse(key='full_file_path')],
+          [sg.Text('Title', size=(3, 0)), sg.InputText(key='input_title')],
           [sg.Button('Generate'), sg.Button('Exit')]],
 
 window = sg.Window('Tomo File Preprocessor', layout)
@@ -34,7 +35,8 @@ while True:  # Event Loop
     if event == 'Generate':
         values['comment'] = 'Yeshivas Toras Moshe | Ner Michoel Alumni Association'
         values['composer'] = 'NerMichoel.org'
-        values['albumArtFilePath'] = ''
+        values['album_art_file_path'] = ''
+        values['heb_year'] = '5782' # we need to grab this from some api it really cannot be hard coded
         print("processing file!")
         m = afc.AudioFileMetaDataController(values)
 

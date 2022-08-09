@@ -5,49 +5,41 @@
 
 import re
 import json
-import subprocess
 import os
 
 
 class AudioFileMetaDataController(object):
-    metadata = {'orgFileName': "",
-                'fullFilePathName': "",
-                'base': "",
-                'title': "",
-                'album': "",
-                'year': "",
-                'artist': "",
-                'comment': "",
-                'composer': "",
-                'albumArtFilePath': "", }
-
-    list_of_parshas = ['Bereishis',
-                       'Noach',
-                       'Lech Lecha',
-                       'Vayeira',
-                       'Chayei Sarah',
-                       'Toldos',
-                       'Vayeitzei',
-                       'Vayishlach',
-                       'Vayeishev',
-                       'Miketz',
-                       'Vayigash',
-                       'Vayechi', ]
-
+    metadata = {
+        'full_file_path': "",
+        'base': "",
+        'album': "",
+        'year': "",
+        'artist': "",
+        'comment': "",
+        'composer': "",
+        'album_art_file_path': "",
+        "title_tag": "",
+        "is_series": False,
+        "heb_year": "",
+    }
 
     def __init__(self, data):
-        self.metadata['fullFilePath'] = data['Browse']
-        self.metadata['base'] = os.path.basename(data['Browse'])
+        self.metadata['full_file_path'] = data['full_file_path']
+        self.metadata['base'] = os.path.basename(data['full_file_path'])
         self.metadata['album'] = data['album']
         self.metadata['artist'] = data['artist']
         self.metadata['year'] = data['year']
         self.metadata['comment'] = data['comment']
         self.metadata['composer'] = data['composer']
-        self.metadata['albumArtFilePath'] = data['albumArtFilePath']
-        self.metadata['title'] = data['title']
+        self.metadata['heb_year'] = data['heb_year']
+        self.metadata['album_art_file_path'] = data['album_art_file_path']
+        if data['is_series']:
+            self.metadata['is_series'] = True
+        if data['input_title']:
+            self.metadata['input_title'] = data['input_title']
+            self.metadata['title_tag'] = data['input_title']  # slight duplication of data but i think it's justified
 
-        # self.updateFileAndTitle(self)
-
+        self.updateFileAndTitle(data['from_file_name'])
 
     def createTitleTag(self, f):
         # replace dashes with spaces remove apostophes
@@ -56,59 +48,112 @@ class AudioFileMetaDataController(object):
         # or new line and replace with a space (this will backfire if there are any other special chars like ! or $)
         # TODO: take the above problem into account
 
-        self.title = re.sub('[^a-zA-Z0-9 \n\.]', ' ', f)
+        updated_title = re.sub('[^a-zA-Z0-9 \n\.]', ' ', f)
 
+        # get rid of initial space that was created if first char is '_'
+        if updated_title[0] == ' ':
+            updated_title = updated_title[1:]
+
+        # remove file extension
+        updated_title = os.path.splitext(updated_title)[0]
+
+        self.metadata['title_tag'] = updated_title
+
+        print(f'title tag is:{self.metadata["title_tag"]}')
 
     def createFileName(self, f):
-        # take file title and replace all spaces with dashes
-        self.base = re.sub('[ ]', '-', f)
+        # take file title and replace all spaces with dashes and add file extension
+        self.metadata['base'] = re.sub('[ ]', '-', f) + '.mp3'
+        print(f'updated file name is:{self.metadata["base"]}')
 
+    def updateFileAndTitle(self, from_file_name):
 
-    def updateFileAndTitle(self):
-        shiur_with_series = ['gemara', 'shiur klali', 'vaadim']
+        shiur_with_heb_year_in_end_of_title = ['halacha shiur', 'shiur klali', 'vaadim']
 
-        shiur_with_year_in_end_of_title = ['halacha shiur', 'shiur klali', 'vaadim']
-
-        if self.metadata['base']:
+        if from_file_name:
             # file has filename but needs title tag so we
             # create new filename by removing the initial underscore
             # create a title tag by replacing all dashes/apostophes with spaces
-            self.createTitleTag(self.base[1:])  # hacky way to ignore the underscore
+            self.createTitleTag(self.metadata['base'])
         else:
-            # user has defined a title tag to use for filename aswell
-            self.createFileName(self.metadata['title'])
+            # user has defined a title tag to use for filename as well
+            # l'choora 'from_input_title' is set to True - should I check this though for any reason?
+            # and we should set their input as the updated_title
+            self.createFileName(self.metadata['input_title'])
 
-            # add number sign to series and remove any zero that precedes a number
-            if self.album in shiur_with_series:
-                re.sub('[0]', '#', n, count=1)  # replace first 0 with a #
-            elif self.album == 'mishnayos':
-                print("TODO add comma between perek and mishma")
-            elif self.album in shiur_with_year_in_end_of_title:
-                self.title += '_' + self.year
-            '''elif self.album == 'parsha':
-                                        # assumption if given title the first word is te name of the parsha
-                                        # or if given file name the first word until the dash is the parsha
-                                        print('TODO: parsha name and year at beginning of file name but in title at end in parantheses!')
-                                        tl = self.base.split('-')
-                                        #update title and file name
-                                        self.base = tl[0] + '''
+        # add number sign to series and remove any zero that precedes a number
+        if self.metadata['is_series']:
+            # get the series value
+            ''' 
+            The following code might be overkill to get the series value 
+            but I'm keeping it for now if it proves to be a more complicated process
+            series_number = re.search('-([0-9]*).mp3', self.metadata['base']).group(
+                 1)  # returns just the value between the
+             # demarcated characters
+             # strip the series number of any leading zeros
+             series_number = series_number.lstrip("0")  # that's a cool strip function
+             print(f'series is:{series_number}')
+             '''
+
+            # assuming series is always at the end of the file name just before file extension
+            title_list = self.metadata['title_tag'].split(' ')  # create list of the file name in order
+            # to replace the series number which is assumed to be at end of string
+
+            updated_series_number = '#' + title_list[-1].lstrip("0")  # add '#' to string and strip any leading zeros
+
+            # replace the series number in the title list with the above updated string
+            title_list[-1] = updated_series_number
+
+            # rejoin list to create the updated title tag
+            updated_title = ' '.join(title_list)
+            self.metadata['title_tag'] = updated_title
+
+            print(f'title tag with series is:{self.metadata["title_tag"]}')
+
+        elif self.metadata['album'] == 'Mishna Yomis':
+            # add comma between perek and mishna
+            # I think we're gonna have to hard code this one!
+            # for now we'll just assume perek number is always the 3rd element of the string
+            title_list = self.metadata['title_tag'].split(' ')  # create list of the file name in order
+            perek_num_with_comma = title_list[2] + ","
+            title_list[2] = perek_num_with_comma
+            # rejoin list to create the updated title tag
+            updated_title = ' '.join(title_list)
+
+            # in the case of multiple mishnas and we are creating the title tag from the file name
+            # we again to have to hardcode the '-' since it was stripped previously out of the file name
+            if from_file_name:
+                if len(title_list) > 5:
+                    mishna_num_with_dash = title_list[4] + "-" + title_list[5]
+                    title_list[4] = mishna_num_with_dash
+                # rejoin list to create the updated title tag
+                updated_title = ' '.join(title_list[0:5])
+
+            self.metadata['title_tag'] = updated_title
+
+        elif self.metadata['album'] in shiur_with_heb_year_in_end_of_title:
+            # certain albums require a the Hebrew year in parentheses at end of title
+            self.metadata['title_tag'] += '(' + self.metadata['heb_year'] + ')'
+
+        elif self.metadata['album'] == 'parsha':
+            # assumption if given title the first word is the name of the parsha
+            # or if given file name the first word until the dash is the parsha
+
+            if from_file_name:
+                # assume the first word in the file name is the parsha
+                title_list = self.metadata['title_tag'].split(' ')
+                parsha = title_list[0]  # perhaps we want to verify with a list of parshas if this is not true
+                year = title_list[1]  # this should always be year
+                # update title tag
+                parsha_year = '(' + parsha + ' ' + year + ')'
+                title_list.append(parsha_year)
+                updated_title = ' '.join(title_list[2:])
+                self.metadata['title_tag'] = updated_title
+
+            # TODO: from input_title
 
     def getMetadataAsJson(self):
-        #print("hello world")
+        # print("hello world")
         print(self.metadata['base'])
 
         return json.dumps(self.metadata, indent=4)
-
-
-
-test_data = {'year': '2022', 'album': 'Bava Metziah', 'artist': 'Moshe Meiselman',
-             'fileName': True, 'title': False,
-             'Browse': 'C:/Users/Ben/Desktop/TomoDev/tomo dev/tomo dev/_Bava-Metzia-Shiur-154.mp3',
-             'title0': '',
-             'comment': 'Yeshivas Toras Moshe | Ner Michoel Alumni Association',
-             'composer': 'NerMichoel.org',
-             'albumArtFilePath': ''}
-
-m = AudioFileMetaDataController(test_data)
-
-print(m.getMetadataAsJson())
