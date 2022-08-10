@@ -39,6 +39,7 @@ while True:  # Event Loop
         values['heb_year'] = '5782' # we need to grab this from some api it really cannot be hard coded
         print("processing file!")
         m = afc.AudioFileMetaDataController(values)
+        print(m.getMetadataAsJson())
 
     '''
      if event == 'Show':
