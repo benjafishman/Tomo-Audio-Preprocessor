@@ -42,7 +42,7 @@ class AudioFileMetaDataController(object):
         self.updateFileAndTitle(data['from_file_name'])
 
     def createTitleTag(self, f):
-        # replace dashes with spaces remove apostophes
+        # replace dashes with spaces remove apostrophes
         # caret is an exclusionary symbol s
         # so this means take anything that is not a lower case or uppercase letter or numeric or .
         # or new line and replace with a space (this will backfire if there are any other special chars like ! or $)

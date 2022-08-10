@@ -5,7 +5,7 @@
 
 
 import PySimpleGUI as sg
-import audioFileController as afc
+import audioFileMetadataController as afc
 
 sg.theme('SandyBeach')  # Keep things interesting for your users
 
@@ -16,7 +16,7 @@ artists = ['Artists', 'Moshe Meiselman', 'Avrahami', 'Fishman', 'Klein', 'Shurki
 layout = [[sg.Text('Year', size=(3, 0)), sg.InputText(key='year')],
           [sg.Combo(albums, default_value=albums[0], key='album')],
           # [sg.Input(key='-IN-')],
-          [sg.Combo(artists, default_value=artists[0], key='artist')],
+          [sg.Combo(['Rabbi ' + i for i in artists], default_value=artists[0], key='artist')],
           [sg.Checkbox('Is Series', default=False, key='is_series')],
           [sg.Text('Title type', size=(20, 1), font='Lucida', justification='left')],
           [sg.Radio('From file name', 'rd_title', key='from_file_name'),
