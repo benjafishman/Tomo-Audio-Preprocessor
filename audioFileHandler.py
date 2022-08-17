@@ -17,10 +17,12 @@ class AudioFileHandler(object):
 
     def __init__(self, file_path):
         self.file_path = file_path
-        print(self.file_path)
+        self.copy_file_path = ''
+        #print(self.file_path)
 
     def copy_file_with_new_title(self, new_title):
         # for now we are assuming the file destination will always be the same directory as the src file
+        print('here')
         src_directory = os.path.dirname(self.file_path)
         print(f'current dir by init it: {src_directory}')
 
@@ -30,6 +32,7 @@ class AudioFileHandler(object):
         print(f'dst dir by copy_file is: {dst_file}')
 
         shutil.copy(self.file_path, dst_file)
+        self.copy_file_path = dst_file
 
     def rename_org_file(self):
         pass

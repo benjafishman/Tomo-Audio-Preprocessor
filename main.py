@@ -6,6 +6,8 @@
 
 import PySimpleGUI as sg
 import audioFileMetadataController as afc
+import audioFileMetadataInjector as afmi
+import audioFileHandler as fileHandler
 
 sg.theme('SandyBeach')  # Keep things interesting for your users
 
@@ -36,10 +38,46 @@ while True:  # Event Loop
         values['comment'] = 'Yeshivas Toras Moshe | Ner Michoel Alumni Association'
         values['composer'] = 'NerMichoel.org'
         values['album_art_file_path'] = ''
-        values['heb_year'] = '5782' # we need to grab this from some api it really cannot be hard coded
-        print("processing file!")
+        values['heb_year'] = '5782'  # we need to grab this from some api it really cannot be hard coded
+        '''
+        Here's where we tie it all together!
+        1. Receive the input data and process it acccordingly to create a dictionary of the metadata
+        2. Copy original file and loaded with the metadata from step 1
+        3. Compress copy if more than 45 kbps
+        4. Prepend original file with '_' if it doesn't already have it
+        '''
+
+
         m = afc.AudioFileMetaDataController(values)
-        print(m.getMetadataAsJson())
+        file_handler = fileHandler.AudioFileHandler(values['full_file_path'])
+        meta_data = {}
+        step = 0
+
+        def fail_message(function_name):
+            msg = f'failed in: {function_name}'
+
+        try:
+            step += 1
+            m.updateFileAndTitle()
+            meta_data = m.getMetadataDic()
+            print(meta_data)
+        except Exception as e:
+            print(f'step: {step}, error {e}')
+
+        try:
+            print('here step 2')
+            step += 1
+
+            new_title = 'test-1-' + meta_data['title_tag'] + '.mp3'
+            print('here')
+            print(f'new title: {new_title}')
+
+            file_handler.copy_file_with_new_title(new_title)
+
+        except Exception as e:
+            print(f'step {step}, error: {e}')
+
+
 
     '''
      if event == 'Show':

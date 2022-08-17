@@ -9,16 +9,15 @@
 
 import eyed3
 
+
 class AudioFileMetaDataInjector(object):
 
     def __init__(self, data):
         self.metadata = data
         self.metaDataElements = ['year', 'album', 'artist', 'title', 'composer', 'comment']
-
         self.audioFile = eyed3.load(data['full_file_path'])
 
     def update_metadata(self):
         for i in self.metaDataElements:
             setattr(self.audioFile.tag, i, self.metadata[i])
         self.audioFile.tag.save()
-
