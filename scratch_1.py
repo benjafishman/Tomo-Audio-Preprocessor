@@ -1,4 +1,3 @@
-
 import audioFileMetadataController as afc
 
 testFromFileNameSeries = {'year': '2022',
@@ -8,7 +7,7 @@ testFromFileNameSeries = {'year': '2022',
                           'from_file_name': True,
                           'from_input_title': False,
                           'full_file_path': 'C:/Users/Ben/Desktop/TomoDev/tomo dev/tomo dev/_Bava-Metzia-Shiur-054.mp3',
-                          'comment': 'Yeshivas Toras Moshe | Ner Michoel Alumni Association',
+                          'comments': 'Yeshivas Toras Moshe | Ner Michoel Alumni Association',
                           'composer': 'NerMichoel.org',
                           'album_art_file_path': '',
                           'input_title': 'this is a test',
@@ -25,7 +24,7 @@ testCreateFileName = {
     'full_file_path': 'C:/Users/Ben/Desktop/TomoDev/tomo dev/tomo dev/Massei-5782-ry.mp3',
     'input_title': 'this is a test',
     'album_art_file_path': '',
-    'comment': 'Yeshivas Toras Moshe | Ner Michoel Alumni Association',
+    'comments': 'Yeshivas Toras Moshe | Ner Michoel Alumni Association',
     'composer': 'NerMichoel.org',
     'heb_year': '5782'
 
@@ -41,7 +40,7 @@ testCreateFileNameMishna = {
     'full_file_path': 'C:/Users/Ben/Desktop/TomoDev/tomo dev/tomo dev/Massei-5782-ry.mp3',
     'input_title': 'Eruvin Perek 3 Mishna 8-6',
     'album_art_file_path': '',
-    'comment': 'Yeshivas Toras Moshe | Ner Michoel Alumni Association',
+    'comments': 'Yeshivas Toras Moshe | Ner Michoel Alumni Association',
     'composer': 'NerMichoel.org',
     'heb_year': '5782'
 
@@ -57,7 +56,7 @@ testFromFileNameMishna = {
     'full_file_path': 'C:/Users/Ben/Desktop/TomoDev/tomo dev/tomo dev/Eruvin-Perek-3-Mishna-8-6.mp3',
     'input_title': '',
     'album_art_file_path': '',
-    'comment': 'Yeshivas Toras Moshe | Ner Michoel Alumni Association',
+    'comments': 'Yeshivas Toras Moshe | Ner Michoel Alumni Association',
     'composer': 'NerMichoel.org',
     'heb_year': '5782'
 
@@ -74,7 +73,7 @@ testFromFileNameShiurKlali = {
                       'dev/_Bava-Metzia-16-Pshiah-in-Sofek-Sheilah-Bbaalim.mp3',
     'input_title': '',
     'album_art_file_path': '',
-    'comment': 'Yeshivas Toras Moshe | Ner Michoel Alumni Association',
+    'comments': 'Yeshivas Toras Moshe | Ner Michoel Alumni Association',
     'composer': 'NerMichoel.org',
     'heb_year': '5782'
 
@@ -91,15 +90,56 @@ testFromFileNameParsha = {
                       'dev/_Massei-5782-Traveling-With-Hashem.mp3',
     'input_title': '',
     'album_art_file_path': '',
-    'comment': 'Yeshivas Toras Moshe | Ner Michoel Alumni Association',
+    'comments': 'Yeshivas Toras Moshe | Ner Michoel Alumni Association',
     'composer': 'NerMichoel.org',
     'heb_year': '5782'
 
 }
-# m = afc.AudioFileMetaDataController(testCreateFileName)
-# m = afc.AudioFileMetaDataController(testFromFileNameSeries)
-# m = afc.AudioFileMetaDataController(testCreateFileNameMishna)
-# m = afc.AudioFileMetaDataController(testFromFileNameMishna)
-m = afc.AudioFileMetaDataController(testFromFileNameParsha)
 
-print(m.getMetadataAsJson())
+
+
+
+try:
+    m = afc.AudioFileMetaDataController(testFromFileNameSeries)
+    m.updateFileAndTitle()
+    print(f'testFromFileNameSeries: {m.getMetadataDic()}')
+except Exception as e:
+    print(f'error testFromFileNameSeries: {e}')
+'''    
+try:
+    m = afc.AudioFileMetaDataController(testCreateFileName)
+    m.updateFileAndTitle()
+    print(f'testCreateFileName: {m.getMetadataDic()}')
+except Exception as e:
+    print(f'error testCreateFileName: {e}')
+
+try:
+    y = afc.AudioFileMetaDataController(testCreateFileNameMishna)
+    y.updateFileAndTitle()
+    print(f'testCreateFileNameMishna: {y.getMetadataDic()}')
+except Exception as e:
+    print(f'error testCreateFileNameMishna: {e}')
+
+
+try:
+    m = afc.AudioFileMetaDataController(testFromFileNameMishna)
+    m.updateFileAndTitle()
+    print(f'testFromFileNameMishna: {m.getMetadataDic()}')
+except Exception as e:
+    print(f'error testFromFileNameMishna: {e}')
+
+try:
+    m = afc.AudioFileMetaDataController(testFromFileNameShiurKlali)
+    m.updateFileAndTitle()
+    print(f'testFromFileNameShiurKlali: {m.getMetadataDic()}')
+except Exception as e:
+    print(f'error testFromFileNameShiurKlali: {e}')
+
+
+try:
+    m = afc.AudioFileMetaDataController(testFromFileNameParsha)
+    m.updateFileAndTitle()
+    print(f'testFromFileNameParsha: {m.getMetadataDic()}')
+except Exception as e:
+    print(f'error testFromFileNameParsha: {e}')
+'''
