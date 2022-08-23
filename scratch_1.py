@@ -120,7 +120,7 @@ try:
     print(f'testCreateFileNameMishna: {y.getMetadataDic()}')
 except Exception as e:
     print(f'error testCreateFileNameMishna: {e}')
-'''
+print('\n\n')
 
 try:
     m = afc.AudioFileMetaDataController(testFromFileNameMishna)
@@ -128,6 +128,7 @@ try:
     print(f'testFromFileNameMishna: {m.getMetadataDic()}')
 except Exception as e:
     print(f'error testFromFileNameMishna: {e}')
+print('\n\n')
 
 try:
     m = afc.AudioFileMetaDataController(testFromFileNameShiurKlali)
@@ -143,4 +144,4 @@ try:
     print(f'testFromFileNameParsha: {m.getMetadataDic()}')
 except Exception as e:
     print(f'error testFromFileNameParsha: {e}')
-'''
+print('\n\n')

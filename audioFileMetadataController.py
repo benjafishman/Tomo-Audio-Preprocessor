@@ -57,8 +57,10 @@ class AudioFileMetaDataController(object):
     }
 
     has_file_name = False
-
+    shiur_with_heb_year_in_end_of_title = ['halacha shiur', 'shiur klali', 'vaadim']
     def __init__(self, data):
+
+
         print("here1 !!!!")
         self.data["metadata"]["is_series"] = False
         # update src file info
@@ -121,13 +123,30 @@ class AudioFileMetaDataController(object):
         if self.data['metadata']['album'] == 'Mishna Yomis':
             title = re.sub('[,]', '',title)
 
+        elif self.data["metadata"]["album"] in self.shiur_with_heb_year_in_end_of_title:
+            # remove year
+            title = re.sub('[(0-9)]','', title)
+
+        elif self.data["metadata"]["album"] == 'parsha':
+            if self.has_file_name:
+                title = self.data['src_file_info']['base'].lstrip('_')
+
+                self.data['dst_file_info']['base'] = title
+
+                dirname, fname = os.path.split(self.data['src_file_info']['path'])
+
+                self.data['dst_file_info']['path'] = os.path.join(dirname, self.data['dst_file_info']['base'])
+
+                return # very hacky! I did this because if we let the function keep going then it's going to add an additional .mp3 to file name
+
         # take file title and replace all spaces with dashes and add file extension
         self.data['dst_file_info']['base'] = re.sub('[ ]', '-', title) + '.mp3'
+
         dirname, fname = os.path.split(self.data['src_file_info']['path'])
+
         self.data['dst_file_info']['path'] = os.path.join(dirname, self.data['dst_file_info']['base'])
 
     def updateFileAndTitle(self):
-        shiur_with_heb_year_in_end_of_title = ['halacha shiur', 'shiur klali', 'vaadim']
 
         if self.has_file_name:
             # file has filename but needs title tag so we
@@ -194,7 +213,7 @@ class AudioFileMetaDataController(object):
 
             self.data['metadata']['title'] = updated_title
 
-        elif self.data['metadata']['album'] in shiur_with_heb_year_in_end_of_title:
+        elif self.data['metadata']['album'] in self.shiur_with_heb_year_in_end_of_title:
             # certain albums require a the Hebrew year in parentheses at end of title
             self.data['metadata']['title'] += '(' + self.data['metadata']['heb_year'] + ')'
 
