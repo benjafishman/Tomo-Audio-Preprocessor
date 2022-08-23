@@ -16,7 +16,7 @@ testFromFileNameSeries = {'year': '2022',
                           }
 testCreateFileName = {
     'year': '2022',
-    'album': 'Bava Metziah',
+    'album': 'Bubu Metziah',
     'artist': 'Moshe Meiselman',
     'is_series': False,
     'from_file_name': False,
@@ -105,21 +105,22 @@ try:
     print(f'testFromFileNameSeries: {m.getMetadataDic()}')
 except Exception as e:
     print(f'error testFromFileNameSeries: {e}')
-'''    
+print('\n\n')
+
 try:
-    m = afc.AudioFileMetaDataController(testCreateFileName)
-    m.updateFileAndTitle()
-    print(f'testCreateFileName: {m.getMetadataDic()}')
+    g = afc.AudioFileMetaDataController(testCreateFileName)
+    g.updateFileAndTitle()
+    print(f'testCreateFileName: {g.getMetadataDic()}')
 except Exception as e:
     print(f'error testCreateFileName: {e}')
-
+print('\n\n')
 try:
     y = afc.AudioFileMetaDataController(testCreateFileNameMishna)
     y.updateFileAndTitle()
     print(f'testCreateFileNameMishna: {y.getMetadataDic()}')
 except Exception as e:
     print(f'error testCreateFileNameMishna: {e}')
-
+'''
 
 try:
     m = afc.AudioFileMetaDataController(testFromFileNameMishna)

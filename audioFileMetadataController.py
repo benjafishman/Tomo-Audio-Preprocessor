@@ -43,7 +43,7 @@ class AudioFileMetaDataController(object):
             'path': "",
             'base': "",
         },
-        'metadata' : {
+        'metadata': {
             'album': "",
             'year': "",
             'artist': "",
@@ -60,6 +60,7 @@ class AudioFileMetaDataController(object):
 
     def __init__(self, data):
         print("here1 !!!!")
+        self.data["metadata"]["is_series"] = False
         # update src file info
         self.data['src_file_info']['path'] = data['full_file_path']
         self.data['src_file_info']['base'] = os.path.basename(data['full_file_path'])
@@ -76,7 +77,8 @@ class AudioFileMetaDataController(object):
         print(self.data['metadata']['album'] == 'Mishna Yomis')
         print(f'album: {meta_album}')
         # check if the audio file is part of a series
-        print(f'is series: {data["is_series"]}')
+        print(f'input is series: {data["is_series"]}')
+        print(f'is series: {self.data["metadata"]["is_series"]}')
         if data['is_series'] is True:
             self.data['metadata']['is_series'] = True
 
@@ -110,12 +112,19 @@ class AudioFileMetaDataController(object):
         self.data['metadata']['title'] = updated_title
 
     def createFileName(self, title):
-        # take file title and replace all spaces with dashes and add file extension
         print(f'create file name with title: {title}')
         if self.data['metadata']['is_series'] is True:
             # must remove the dash from the string
             title = re.sub('[#]', '',title)
+
+        # if album is mishna yomis we need to remove the comma
+        if self.data['metadata']['album'] == 'Mishna Yomis':
+            title = re.sub('[,]', '',title)
+
+        # take file title and replace all spaces with dashes and add file extension
         self.data['dst_file_info']['base'] = re.sub('[ ]', '-', title) + '.mp3'
+        dirname, fname = os.path.split(self.data['src_file_info']['path'])
+        self.data['dst_file_info']['path'] = os.path.join(dirname, self.data['dst_file_info']['base'])
 
     def updateFileAndTitle(self):
         shiur_with_heb_year_in_end_of_title = ['halacha shiur', 'shiur klali', 'vaadim']
@@ -203,10 +212,11 @@ class AudioFileMetaDataController(object):
                 title_list.append(parsha_year)
                 updated_title = ' '.join(title_list[2:])
                 self.data['metadata']['title'] = updated_title
+            # TODO: from input_title
 
         self.createFileName(self.data['metadata']['title'])
 
-            # TODO: from input_title
+
 
     def getMetadataDic(self):
         return self.data
