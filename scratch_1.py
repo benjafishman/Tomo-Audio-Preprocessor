@@ -96,6 +96,22 @@ testFromFileNameParsha = {
 
 }
 
+testInputTileNameParsha = {
+    'year': '2022',
+    'album': 'parsha',
+    'artist': 'Moshe Meiselman',
+    'is_series': False,
+    'from_file_name': False,
+    'from_input_title': True,
+    'full_file_path': 'C:/Users/Ben/Desktop/TomoDev/tomo dev/tomo '
+                      'dev/0011101010.mp3',
+    'input_title': 'Traveling With Hashem (Massei 5782)',
+    'album_art_file_path': '',
+    'comments': 'Yeshivas Toras Moshe | Ner Michoel Alumni Association',
+    'composer': 'NerMichoel.org',
+    'heb_year': '5782'
+
+}
 
 
 
@@ -145,3 +161,10 @@ try:
 except Exception as e:
     print(f'error testFromFileNameParsha: {e}')
 print('\n\n')
+
+try:
+    m = afc.AudioFileMetaDataController(testInputTileNameParsha)
+    m.updateFileAndTitle()
+    print(f'testInputTileNameParsha: {m.getMetadataDic()}')
+except Exception as e:
+    print(f'error testInputTileNameParsha: {e}')

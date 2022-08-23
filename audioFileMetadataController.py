@@ -138,6 +138,16 @@ class AudioFileMetaDataController(object):
                 self.data['dst_file_info']['path'] = os.path.join(dirname, self.data['dst_file_info']['base'])
 
                 return # very hacky! I did this because if we let the function keep going then it's going to add an additional .mp3 to file name
+            else:
+                # user has input the title so we'll use that for the file name
+                # assumption is that the there is a (parsha year) substring in that order
+                parsha, year = re.search(r"\((.+?)\)", title).group(1).split()
+
+                # take the parsha year out of title
+                title = re.sub(r" \((.+?)\)", '',title)
+
+                # put the parsha/year at the beginning of title
+                title = parsha + " " + year + " " + title
 
         # take file title and replace all spaces with dashes and add file extension
         self.data['dst_file_info']['base'] = re.sub('[ ]', '-', title) + '.mp3'
