@@ -45,7 +45,7 @@ class AudioFileMetaDataController(object):
         },
         'metadata': {
             'album': "",
-            'year': "",
+            'Year': "",
             'artist': "",
             'comment': "",
             'composer': "",
@@ -70,7 +70,7 @@ class AudioFileMetaDataController(object):
         self.data['metadata']['album'] = data['album']
         self.data['metadata']['artist'] = data['artist']
         self.data['metadata']['year'] = data['year']
-        self.data['metadata']['comment'] = data['comments']
+        self.data['metadata']['comment'] = data['comment']
         self.data['metadata']['composer'] = data['composer']
         self.data['metadata']['heb_year'] = data['heb_year']
         self.data['metadata']['album_art_file_path'] = data['album_art_file_path']
@@ -241,7 +241,7 @@ class AudioFileMetaDataController(object):
                 title_list.append(parsha_year)
                 updated_title = ' '.join(title_list[2:])
                 self.data['metadata']['title'] = updated_title
-            # TODO: from input_title
+            # if the user has input title then we just need to update the dst file name
 
         self.createFileName(self.data['metadata']['title'])
 

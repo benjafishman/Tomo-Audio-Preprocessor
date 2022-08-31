@@ -6,7 +6,7 @@
 
 import PySimpleGUI as sg
 import audioFileMetadataController as afc
-import audioFileMetadataInjector as afmi
+import audioFileTagController as afmi
 import audioFileHandler as fileHandler
 
 sg.theme('SandyBeach')  # Keep things interesting for your users
@@ -35,7 +35,7 @@ while True:  # Event Loop
     if event == sg.WIN_CLOSED or event == 'Exit':
         break
     if event == 'Generate':
-        values['comment'] = 'Yeshivas Toras Moshe | Ner Michoel Alumni Association'
+        values['comments'] = 'Yeshivas Toras Moshe | Ner Michoel Alumni Association'
         values['composer'] = 'NerMichoel.org'
         values['album_art_file_path'] = ''
         values['heb_year'] = '5782'  # we need to grab this from some api it really cannot be hard coded
@@ -47,9 +47,14 @@ while True:  # Event Loop
         4. Prepend original file with '_' if it doesn't already have it
         '''
 
-
-        m = afc.AudioFileMetaDataController(values)
-        file_handler = fileHandler.AudioFileHandler(values['full_file_path'])
+        try:
+            m = afc.AudioFileMetaDataController(values)
+            m.updateFileAndTitle()
+            print(f'values: {m.getMetadataDic()}')
+        except Exception as e:
+            print(f'error values: {e}')
+        print('\n\n')
+        '''file_handler = fileHandler.AudioFileHandler(values['full_file_path'])
         meta_data = {}
         step = 0
 
@@ -80,14 +85,13 @@ while True:  # Event Loop
 
 
     '''
-     if event == 'Show':
-     # Update the "output" text element to be the value of "input" element
-		window['-OUTPUT-'].update(values['-IN-'])
+    if event == 'Show':
+        # Update the "output" text element to be the value of "input" element
+        window['-OUTPUT-'].update(values['-IN-'])
 
-
+'''
     what needs to happen now:
     1. set the metadata: name, title, album, artists, year,
-    2. compress file
-    '''
+    2. compress file'''
 
 window.close()
