@@ -24,9 +24,4 @@ class AudioFileTagController(object):
             self.audioFile['artwork'] = img_in.read()
         self.audioFile.save()
 
-    def needs_compression(self):
-        bitrate = int(self.audioFile['#bitrate'])
-        if bitrate >= 128000:
-            return True
-        else:
-            return False
+
