@@ -6,8 +6,10 @@
 
 import PySimpleGUI as sg
 import audioFileMetadataController as afc
-import audioFileTagController as afmi
+import audioFileTagController as aftc
 import audioFileHandler as fileHandler
+import music_tag
+import subprocess
 
 sg.theme('SandyBeach')  # Keep things interesting for your users
 
@@ -35,9 +37,9 @@ while True:  # Event Loop
     if event == sg.WIN_CLOSED or event == 'Exit':
         break
     if event == 'Generate':
-        values['comments'] = 'Yeshivas Toras Moshe | Ner Michoel Alumni Association'
+        values['comment'] = 'Yeshivas Toras Moshe | Ner Michoel Alumni Association'
         values['composer'] = 'NerMichoel.org'
-        values['album_art_file_path'] = ''
+        values['album_art_file_path'] = 'C:/Users/Ben/Desktop/TomoDev/tomo dev/tomo dev/audio_icon.jpg'
         values['heb_year'] = '5782'  # we need to grab this from some api it really cannot be hard coded
         '''
         Here's where we tie it all together!
@@ -46,15 +48,76 @@ while True:  # Event Loop
         3. Compress copy if more than 45 kbps
         4. Prepend original file with '_' if it doesn't already have it
         '''
+        m = afc.AudioFileMetaDataController(values)
+        file_handler = fileHandler.AudioFileHandler()
+
+        data = {}
+        needs_compression = False
 
         try:
-            m = afc.AudioFileMetaDataController(values)
+            m.updateFileAndTitle()
+            data = m.getMetadataDic()
+            print(data)
+        except Exception as e:
+            print(f'error {e}')
+
+        org_file_tag = music_tag.load_file(data['src_file_info']['path'])
+
+        def needs_compression(music_tag_file):
+            bitrate = int(music_tag_file.audioFile['#bitrate'])
+            if bitrate >= 128000:
+                return True
+            else:
+                return False
+
+    # check if file needs compression
+        if int(org_file_tag['#bitrate']) > 48000:
+            try:
+                print('compressing')
+
+                src = data['src_file_info']['path']
+                dst = data['dst_file_info']['path']
+
+                ffmpeg_downgrade_kbps = 'ffmpeg -i ' + '"' + src + '"' + ' -codec:a libmp3lame -b:a 48k' + ' ' + '"' + dst + '"'
+                # ffmpeg command:            ffmpeg -i input.mp3 -codec:a libmp3lame -b:a 45k output.mp3
+                print(ffmpeg_downgrade_kbps)
+
+                command_output = subprocess.check_output(ffmpeg_downgrade_kbps, shell=True)  # Run the command
+
+
+            except Exception as e:
+                print(f'error {e}')
+
+        else:
+
+            try:
+                print('copying file')
+                src = data['src_file_info']['path']
+                dst = data['dst_file_info']['path']
+                file_handler.copy_file_with_new_title(src, dst)
+
+            except Exception as e:
+                print(f'error: {e}')
+
+        try:
+            # load copied file with metadata
+            print('loading copied file with metadata')
+            # print(data)
+            meta_data_injector = aftc.AudioFileTagController(data)
+            meta_data_injector.update_metadata()
+
+        except Exception as e:
+            print(f'error: {e}')
+        print('done')
+
+    '''try:
+            
             m.updateFileAndTitle()
             print(f'values: {m.getMetadataDic()}')
         except Exception as e:
             print(f'error values: {e}')
         print('\n\n')
-        '''file_handler = fileHandler.AudioFileHandler(values['full_file_path'])
+        file_handler = fileHandler.AudioFileHandler(values['full_file_path'])
         meta_data = {}
         step = 0
 

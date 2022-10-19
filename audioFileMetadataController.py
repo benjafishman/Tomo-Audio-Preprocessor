@@ -127,10 +127,11 @@ class AudioFileMetaDataController(object):
             # remove year
             title = re.sub('[(0-9)]','', title)
 
-        elif self.data["metadata"]["album"] == 'parsha':
+        elif self.data["metadata"]["album"] == 'Parshas Hashavuah':
+
             if self.has_file_name:
                 title = self.data['src_file_info']['base'].lstrip('_')
-
+                print("here")
                 self.data['dst_file_info']['base'] = title
 
                 dirname, fname = os.path.split(self.data['src_file_info']['path'])
@@ -139,8 +140,10 @@ class AudioFileMetaDataController(object):
 
                 return # very hacky! I did this because if we let the function keep going then it's going to add an additional .mp3 to file name
             else:
+                print("here here")
                 # user has input the title so we'll use that for the file name
                 # assumption is that the there is a (parsha year) substring in that order
+                print(f'title: {title}')
                 parsha, year = re.search(r"\((.+?)\)", title).group(1).split()
 
                 # take the parsha year out of title
@@ -227,7 +230,7 @@ class AudioFileMetaDataController(object):
             # certain albums require a the Hebrew year in parentheses at end of title
             self.data['metadata']['title'] += '(' + self.data['metadata']['heb_year'] + ')'
 
-        elif self.data['metadata']['album'] == 'parsha':
+        elif self.data['metadata']['album'] == 'Parshas Hashavuah':
             # assumption if given title the first word is the name of the parsha
             # or if given file name the first word until the dash is the parsha
 
