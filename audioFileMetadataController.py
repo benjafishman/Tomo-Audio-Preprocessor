@@ -39,7 +39,7 @@ class AudioFileMetaDataController(object):
             'path': "",
             'base': "",
         },
-        'dst_file_info':{
+        'dst_file_info': {
             'path': "",
             'base': "",
         },
@@ -57,11 +57,11 @@ class AudioFileMetaDataController(object):
     }
 
     has_file_name = False
-    shiur_with_heb_year_in_end_of_title = ['halacha shiur', 'shiur klali', 'vaadim']
+    shiur_with_heb_year_in_end_of_title = ['Halacha Shiur', 'Shiur Klali', 'Vaadim']
+    shiur_with_year_prepended_to_file_name_appended_to_title = ['Parshas Hashavuah', 'Moadim']
+
     def __init__(self, data):
 
-
-        print("here1 !!!!")
         self.data["metadata"]["is_series"] = False
         # update src file info
         self.data['src_file_info']['path'] = data['full_file_path']
@@ -93,7 +93,8 @@ class AudioFileMetaDataController(object):
         # check if the user has provided the title for the audio file
         elif data['input_title']:
             # self.data['metadata']['input_title'] = data['input_title'] # TODO: do we need this? I don't think so
-            self.data['metadata']['title'] = data['input_title']  # slight duplication of data but i think it's justified
+            self.data['metadata']['title'] = data[
+                'input_title']  # slight duplication of data but i think it's justified
 
     def createTitleTag(self, f):
         # replace dashes with spaces remove apostrophes
@@ -102,9 +103,10 @@ class AudioFileMetaDataController(object):
         # or new line and replace with a space (this will backfire if there are any other special chars like ! or $)
         # TODO: take the above problem into account
 
+        print('CREATE TITLE TAG')
         print(f'base: {f}')
         updated_title = re.sub('[^a-zA-Z0-9 \n\.]', ' ', f)
-
+        print(f'updated_title: {updated_title}')
         # get rid of initial space that was created if first char is '_'
         if updated_title[0] == ' ':
             updated_title = updated_title[1:]
@@ -117,17 +119,20 @@ class AudioFileMetaDataController(object):
         print(f'create file name with title: {title}')
         if self.data['metadata']['is_series'] is True:
             # must remove the dash from the string
-            title = re.sub('[#]', '',title)
+            title = re.sub('[#]', '', title)
 
         # if album is mishna yomis we need to remove the comma
         if self.data['metadata']['album'] == 'Mishna Yomis':
-            title = re.sub('[,]', '',title)
+            title = re.sub('[,]', '', title)  # regex to remove commas
 
-        elif self.data["metadata"]["album"] in self.shiur_with_heb_year_in_end_of_title:
-            # remove year
-            title = re.sub('[(0-9)]','', title)
+        # TODO: remove?
+        # I don't think we need this i believe the year is appended automatically
+        # elif self.data["metadata"]["album"] in self.shiur_with_heb_year_in_end_of_title:
+        #    # remove year
+        #    print("SHIUR WITH HEB YR AT END OF TITLE @#$%")
+        #    title = re.sub('[(0-9)]','', title)
 
-        elif self.data["metadata"]["album"] == 'Parshas Hashavuah':
+        elif self.data["metadata"]["album"] in self.shiur_with_year_prepended_to_file_name_appended_to_title:
 
             if self.has_file_name:
                 title = self.data['src_file_info']['base'].lstrip('_')
@@ -138,22 +143,26 @@ class AudioFileMetaDataController(object):
 
                 self.data['dst_file_info']['path'] = os.path.join(dirname, self.data['dst_file_info']['base'])
 
-                return # very hacky! I did this because if we let the function keep going then it's going to add an additional .mp3 to file name
+                return  # very hacky! I did this because if we let the function keep going then it's going to add an additional .mp3 to file name
             else:
-                print("here here")
-                # user has input the title so we'll use that for the file name
-                # assumption is that the there is a (parsha year) substring in that order
+                print('input title name for shiur with year & title/file switch')
                 print(f'title: {title}')
-                parsha, year = re.search(r"\((.+?)\)", title).group(1).split()
+                if self.data["metadata"]["album"] == "Parshas Hashavuah":
+                    # user has input the title so we'll use that for the file name
+                    # assumption is that the there is a (parsha year) substring in that order
+                    parsha, year = re.search(r"\((.+?)\)", title).group(1).split()
 
-                # take the parsha year out of title
-                title = re.sub(r" \((.+?)\)", '',title)
+                    # take the parsha year out of title
+                    title = re.sub(r" \((.+?)\)", '', title)
 
-                # put the parsha/year at the beginning of title
-                title = parsha + " " + year + " " + title
+                    # put the parsha/year at the beginning of title
+                    title = parsha + " " + year + " " + title
+                # TODO: create more defined heuristics for other categories such as moadim...
+
+        t = re.sub('[^a-zA-Z0-9 \n\.]', '', title)  # strip out anything that is not alphanumeric
 
         # take file title and replace all spaces with dashes and add file extension
-        self.data['dst_file_info']['base'] = re.sub('[ ]', '-', title) + '.mp3'
+        self.data['dst_file_info']['base'] = re.sub('[ ]', '-', t) + '.mp3'
 
         dirname, fname = os.path.split(self.data['src_file_info']['path'])
 
@@ -175,23 +184,23 @@ class AudioFileMetaDataController(object):
         # add number sign to series and remove any zero that precedes a number
         if self.data['metadata']['is_series']:
             # get the series value
-            ''' 
-            The following code might be overkill to get the series value 
+
+            '''The following code might be overkill to get the series value
             but I'm keeping it for now if it proves to be a more complicated process
             series_number = re.search('-([0-9]*).mp3', self.metadata['base']).group(
                  1)  # returns just the value between the
              # demarcated characters
              # strip the series number of any leading zeros
-             series_number = series_number.lstrip("0")  # that's a cool strip function
-             print(f'series is:{series_number}')
-             '''
+            series_number = series_number.lstrip("0")  # that's a cool strip function
+            print(f'series is:{series_number}')
+            '''
 
             # assuming series is always at the end of the file name just before file extension
             title_list = self.data['metadata']['title'].split(' ')  # create list of the file name in order
             print(f'title_list: {title_list}')
             # to replace the series number which is assumed to be at end of string
-
-            updated_series_number = '#' + title_list[-1].lstrip("0")  # add '#' to string and strip any leading zeros
+            series_number = title_list[-1].lstrip("0")
+            updated_series_number = '#' + series_number  # add '#' to string and strip any leading zeros
 
             # replace the series number in the title list with the above updated string
             title_list[-1] = updated_series_number
@@ -230,25 +239,31 @@ class AudioFileMetaDataController(object):
             # certain albums require a the Hebrew year in parentheses at end of title
             self.data['metadata']['title'] += '(' + self.data['metadata']['heb_year'] + ')'
 
-        elif self.data['metadata']['album'] == 'Parshas Hashavuah':
+        elif self.data['metadata']['album'] in self.shiur_with_year_prepended_to_file_name_appended_to_title:
             # assumption if given title the first word is the name of the parsha
             # or if given file name the first word until the dash is the parsha
 
             if self.has_file_name:
                 # assume the first word in the file name is the parsha
+                content_in_parenthesis = ""
                 title_list = self.data['metadata']['title'].split(' ')
-                parsha = title_list[0]  # perhaps we want to verify with a list of parshas if this is not true
-                year = title_list[1]  # this should always be year
-                # update title tag
-                parsha_year = '(' + parsha + ' ' + year + ')'
-                title_list.append(parsha_year)
-                updated_title = ' '.join(title_list[2:])
+                if self.data['metadata']['album'] == 'Parshas Hashavuah':
+                    parsha = title_list[0]  # perhaps we want to verify with a list of parshas if this is not true
+                    year = title_list[1]  # this should always be year
+                    # update title tag
+                    content_in_parenthesis = '(' + parsha + ' ' + year + ')'
+                    title_list.append(content_in_parenthesis)
+                    updated_title = ' '.join(title_list[2:])
+                if self.data['metadata']['album'] == 'Moadim':
+                    # assume year is last element in title
+                    year = title_list[-1]
+                    content_in_parenthesis = '(' + year + ')'
+                    title_list[-1] = content_in_parenthesis
+                    updated_title = ' '.join(title_list)
                 self.data['metadata']['title'] = updated_title
             # if the user has input title then we just need to update the dst file name
 
         self.createFileName(self.data['metadata']['title'])
-
-
 
     def getMetadataDic(self):
         return self.data
