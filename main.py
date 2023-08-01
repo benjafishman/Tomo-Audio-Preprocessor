@@ -11,12 +11,24 @@ import audioFileHandler as fileHandler
 import music_tag
 import subprocess
 import os
+from openpyxl import load_workbook
 
 sg.theme('SandyBeach')  # Keep things interesting for your users
 
-albums = ['Album', 'Bava Metziah', 'Parshas Hashavuah', 'Moadim', 'Hilchos Tefilla', 'Shiur Klali', 'Mishna Yomis']
+wb = load_workbook(filename='C:\\Users\\Win10\Desktop\\tomo dev\\admin.xlsx')
 
-artists = ['Artists', 'Moshe Meiselman', 'Avrahami', 'Fishman', 'Klein', 'Shurkin']
+sheet = wb.active
+
+# albums = ['Album', 'Bava Metziah', 'Parshas Hashavuah', 'Moadim', 'Hilchos Tefilla', 'Shiur Klali', 'Mishna Yomis']
+albums = []
+for row in sheet:
+    album = row[1].value
+    albums.append(album)
+# artists = ['Artists', 'Moshe Meiselman', 'Avrahami', 'Fishman', 'Klein', 'Shurkin']
+artists = []
+for row in sheet:
+    artist = row[0].value
+    artists.append(str(artist))
 
 layout = [[sg.Text('Year', size=(3, 0)), sg.InputText(key='year')],
           [sg.Combo(albums, default_value=albums[0], key='album')],
@@ -39,10 +51,14 @@ while True:  # Event Loop
         break
     if event == 'Generate':
         # TODO: these hard coded values are goin to mess you up when you transfer to another computer
-        values['comment'] = 'Yeshivas Toras Moshe | Ner Michoel Alumni Association'
-        values['composer'] = 'NerMichoel.org'
-        values['album_art_file_path'] = 'C:/Users/Win10/Desktop/tomo dev/audio_icon.jpg'
-        values['heb_year'] = '5782'  # we need to grab this from some api it really cannot be hard coded
+
+        values['comment'] = sheet['C2'].value  # 'Yeshivas Toras Moshe | Ner Michoel Alumni Association'
+
+        values['composer'] = sheet['D2'].value  # 'NerMichoel.org'
+
+        values['album_art_file_path'] = sheet['E2'].value  # 'C:/Users/Win10/Desktop/tomo dev/audio_icon.jpg'
+
+        values['heb_year'] = sheet['F2'].value  # we need to grab this from some api it really cannot be hard coded
 
         file_name, file_extension = os.path.splitext(values['full_file_path'])
 
