@@ -6,8 +6,10 @@ testFromFileNameSeries = {'year': '2022',
                           'is_series': True,
                           'from_file_name': True,
                           'from_input_title': False,
-                          'full_file_path': 'C:/Users/Ben/Desktop/TomoDev/tomo dev/tomo dev/_Bava-Metzia-Shiur-054.mp3',
-                          'comments': 'Yeshivas Toras Moshe | Ner Michoel Alumni Association',
+                          # 'full_file_path': 'C:/Users/Ben/Desktop/TomoDev/tomo dev/tomo
+                          # dev/_Bava-Metzia-Shiur-054.mp3',
+                          'full_file_path': 'C:/Users/Win10/Desktop/tomo dev/_Bava-Metzia-Shiur-154.mp3',
+                          'comment': 'Yeshivas Toras Moshe | Ner Michoel Alumni Association',
                           'composer': 'NerMichoel.org',
                           'album_art_file_path': '',
                           'input_title': 'this is a test',
@@ -113,8 +115,6 @@ testInputTileNameParsha = {
 
 }
 
-
-
 try:
     m = afc.AudioFileMetaDataController(testFromFileNameSeries)
     m.updateFileAndTitle()
@@ -122,7 +122,7 @@ try:
 except Exception as e:
     print(f'error testFromFileNameSeries: {e}')
 print('\n\n')
-
+'''
 try:
     g = afc.AudioFileMetaDataController(testCreateFileName)
     g.updateFileAndTitle()
@@ -153,7 +153,6 @@ try:
 except Exception as e:
     print(f'error testFromFileNameShiurKlali: {e}')
 
-
 try:
     m = afc.AudioFileMetaDataController(testFromFileNameParsha)
     m.updateFileAndTitle()
@@ -167,4 +166,4 @@ try:
     m.updateFileAndTitle()
     print(f'testInputTileNameParsha: {m.getMetadataDic()}')
 except Exception as e:
-    print(f'error testInputTileNameParsha: {e}')
+    print(f'error testInputTileNameParsha: {e}') '''

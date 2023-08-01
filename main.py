@@ -23,7 +23,7 @@ layout = [[sg.Text('Year', size=(3, 0)), sg.InputText(key='year')],
           # [sg.Input(key='-IN-')],
           [sg.Combo(['Rabbi ' + i for i in artists], default_value=artists[0], key='artist')],
           [sg.Checkbox('Is Series', default=False, key='is_series')],
-          [sg.Text('Title type', size=(20, 1), font='Lucida', justification='left')],
+          [sg.Text('Title Type', size=(10, 1), font='Lucida', justification='left')],
           [sg.Radio('From file name', 'rd_title', key='from_file_name'),
            sg.Radio('Create file name', 'rd_title', key='from_input_title')],
           [sg.Text("Choose a file: "), sg.FileBrowse(key='full_file_path')],
@@ -38,28 +38,28 @@ while True:  # Event Loop
     if event == sg.WIN_CLOSED or event == 'Exit':
         break
     if event == 'Generate':
+        # TODO: these hard coded values are goin to mess you up when you transfer to another computer
         values['comment'] = 'Yeshivas Toras Moshe | Ner Michoel Alumni Association'
         values['composer'] = 'NerMichoel.org'
-        values['album_art_file_path'] = 'C:/Users/Ben/Desktop/TomoDev/tomo dev/tomo dev/audio_icon.jpg'
+        values['album_art_file_path'] = 'C:/Users/Win10/Desktop/tomo dev/audio_icon.jpg'
         values['heb_year'] = '5782'  # we need to grab this from some api it really cannot be hard coded
 
-        file_name, file_extension = os.path.splitext( values['full_file_path'])
+        file_name, file_extension = os.path.splitext(values['full_file_path'])
 
-
-    # field validation
+        # field validation
         # check if user has selected a file
         if values['full_file_path'] == "":
             sg.popup('You must choose a file')
 
         # validate that user chose an audio file
-        #if file_extension
+        # if file_extension
         elif file_extension != '.mp3':
             sg.popup('You must select an audio file (extension .mp3) ')
         else:
 
             '''
            Here's where we tie it all together!
-           1. Receive the input data and process it acccordingly to create a dictionary of the metadata
+           1. Receive the input data and process it accordingly to create a dictionary of the metadata
            2. Copy original file and loaded with the metadata from step 1
            3. Compress copy if more than 45 kbps
            4. Prepend original file with '_' if it doesn't already have it
@@ -79,6 +79,7 @@ while True:  # Event Loop
 
             org_file_tag = music_tag.load_file(data['src_file_info']['path'])
 
+
             def needs_compression(music_tag_file):
                 bitrate = int(music_tag_file.audioFile['#bitrate'])
                 if bitrate >= 128000:
@@ -86,8 +87,11 @@ while True:  # Event Loop
                 else:
                     return False
 
-        # check if file needs compression
+
+            # check if file needs compression FFMPEG
+
             if int(org_file_tag['#bitrate']) > 48000:
+
                 try:
                     print('compressing')
 
@@ -109,12 +113,13 @@ while True:  # Event Loop
                 try:
                     print('copying file')
                     src = data['src_file_info']['path']
+
                     dst = data['dst_file_info']['path']
+
                     file_handler.copy_file_with_new_title(src, dst)
 
                 except Exception as e:
                     print(f'error: {e}')
-
             try:
                 # load copied file with metadata
                 print('loading copied file with metadata')

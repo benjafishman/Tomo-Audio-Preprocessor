@@ -3,7 +3,7 @@
 # Bentzion Fishman
 # 8/10/2022
 # The purpose of this object is simply to update the metadata of
-# a audio file given the file and the dictionary of the updated metadata
+# an audio file given the file and the dictionary of the updated metadata
 #
 ############################
 import music_tag
