@@ -16,22 +16,31 @@ import datetime
 year = datetime.date.today().year
 sg.theme('SandyBeach')  # Keep things interesting for your users
 
-wb = load_workbook(filename='C:\\Users\\Win10\Desktop\\tomo dev\\admin.xlsx')
 
+
+# setup file path to import the settings spreadsheet
+dir_path = os.path.dirname(os.path.realpath(__file__))
+settings_file_name = "settings.xlsx"
+settings_file_path = os.path.join(dir_path, settings_file_name)
+
+# load spread sheet
+wb = load_workbook(filename=settings_file_path)
 sheet = wb.active
 
-# albums = ['Album', 'Bava Metziah', 'Parshas Hashavuah', 'Moadim', 'Hilchos Tefilla', 'Shiur Klali', 'Mishna Yomis']
+# extract albums from spreadsheet and put them into an array
 albums = []
 for row in sheet:
     album = row[1].value
     albums.append(album)
-# artists = ['Artists', 'Moshe Meiselman', 'Avrahami', 'Fishman', 'Klein', 'Shurkin']
+
+# extract rabbis from spreadsheet and put them into an array
 artists = []
 for row in sheet:
     artist = row[0].value
     if artist:
         artists.append(str(artist))
 
+# setup gui
 layout = [[sg.Text('Year', size=(3, 0)), sg.InputText(key='year', default_text=year, size=(5,1))],
           [sg.Combo(albums[1:], default_value=albums[0], key='album')],
           # [sg.Input(key='-IN-')],
@@ -52,7 +61,6 @@ while True:  # Event Loop
     if event == sg.WIN_CLOSED or event == 'Exit':
         break
     if event == 'Generate':
-        # TODO: these hard coded values are goin to mess you up when you transfer to another computer
 
         values['comment'] = sheet['C2'].value  # 'Yeshivas Toras Moshe | Ner Michoel Alumni Association'
 
