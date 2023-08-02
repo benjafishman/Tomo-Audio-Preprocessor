@@ -12,7 +12,8 @@ import music_tag
 import subprocess
 import os
 from openpyxl import load_workbook
-
+import datetime
+year = datetime.date.today().year
 sg.theme('SandyBeach')  # Keep things interesting for your users
 
 wb = load_workbook(filename='C:\\Users\\Win10\Desktop\\tomo dev\\admin.xlsx')
@@ -31,7 +32,7 @@ for row in sheet:
     if artist:
         artists.append(str(artist))
 
-layout = [[sg.Text('Year', size=(3, 0)), sg.InputText(key='year')],
+layout = [[sg.Text('Year', size=(3, 0)), sg.InputText(key='year', default_text=year, size=(5,1))],
           [sg.Combo(albums[1:], default_value=albums[0], key='album')],
           # [sg.Input(key='-IN-')],
           [sg.Combo(['Rabbi ' + i for i in artists[1:]], default_value=artists[0], key='artist')],
