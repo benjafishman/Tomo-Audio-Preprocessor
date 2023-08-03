@@ -42,9 +42,9 @@ for row in sheet:
 
 # setup gui
 layout = [[sg.Text('Year', size=(3, 0)), sg.InputText(key='year', default_text=year, size=(5,1))],
-          [sg.Combo(albums[1:], default_value=albums[0], key='album')],
+          [sg.Combo(albums[1:], default_value=albums[0], key='album'),
+           sg.Combo(['Rabbi ' + i for i in artists[1:]], default_value=artists[0], key='artist')],
           # [sg.Input(key='-IN-')],
-          [sg.Combo(['Rabbi ' + i for i in artists[1:]], default_value=artists[0], key='artist')],
           [sg.Checkbox('Is Series', default=False, key='is_series')],
           [sg.Text('Title Type', size=(10, 1), font='Lucida', justification='left')],
           [sg.Radio('From file name', 'rd_title', key='from_file_name'),
