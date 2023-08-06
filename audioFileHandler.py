@@ -3,9 +3,8 @@
 # Bentzion Fishman
 # 8/10/2022
 # The purpose of this object is
-# 1. rename the original file with a leading underscor
+# 1. rename the original file with a leading underscore
 # 2. create copy of original file
-# 3. compress file
 #############################
 
 

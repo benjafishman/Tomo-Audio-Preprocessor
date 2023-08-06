@@ -13,10 +13,9 @@ import subprocess
 import os
 from openpyxl import load_workbook
 import datetime
+
 year = datetime.date.today().year
 sg.theme('SandyBeach')  # Keep things interesting for your users
-
-
 
 # setup file path to import the settings spreadsheet
 dir_path = os.path.dirname(os.path.realpath(__file__))
@@ -40,16 +39,38 @@ for row in sheet:
     if artist:
         artists.append(str(artist))
 
+# check for title tag/year
+
+def check_pre_set_tags(audio_file_path):
+    r = {'title': None, 'year': None}
+
+    org_file_tag = music_tag.load_file(audio_file_path)
+    if org_file_tag['title']:
+        r['title'] = org_file_tag['title']
+        if org_file_tag['year']:
+            r['year'] = org_file_tag['year']
+        else:
+            print("update gui values of title")
+    else:
+        print("nothing to update")
+    print(r)
+    return r
+
+
+    # check fo preset title and year tag
+    # if org_file_tag['title']:
+
+
 # setup gui
-layout = [[sg.Text('Year', size=(3, 0)), sg.InputText(key='year', default_text=year, size=(5,1))],
+layout = [[sg.Text('Year', size=(3, 0)), sg.InputText(key='year', default_text=year, size=(5, 1))],
           [sg.Combo(albums[1:], default_value=albums[0], key='album'),
            sg.Combo(['Rabbi ' + i for i in artists[1:]], default_value=artists[0], key='artist')],
-          # [sg.Input(key='-IN-')],
           [sg.Checkbox('Is Series', default=False, key='is_series')],
           [sg.Text('Title Type', size=(10, 1), font='Lucida', justification='left')],
           [sg.Radio('From file name', 'rd_title', key='from_file_name'),
            sg.Radio('Create file name', 'rd_title', key='from_input_title')],
-          [sg.Text("Choose a file: "), sg.FileBrowse(key='full_file_path')],
+          #[sg.Text("Choose a file: "), sg.FileBrowse(key='full_file_path')],
+          [sg.Input(key="-IN-", change_submits=True), sg.FileBrowse(key="full_file_path")],
           [sg.Text('Title', size=(3, 0)), sg.InputText(key='input_title')],
           [sg.Button('Generate'), sg.Button('Exit')]],
 
@@ -58,6 +79,12 @@ window = sg.Window('Tomo File Preprocessor', layout)
 while True:  # Event Loop
     event, values = window.read()
     print(event, values)
+    if values["-IN-"]:
+        r = check_pre_set_tags(values["-IN2-"])
+        if r['year']:
+            window['year'].update(r['year'])
+        if r['title']:
+            window['input_title'].update(r['title'])
     if event == sg.WIN_CLOSED or event == 'Exit':
         break
     if event == 'Generate':
@@ -105,6 +132,8 @@ while True:  # Event Loop
 
             org_file_tag = music_tag.load_file(data['src_file_info']['path'])
 
+            # check fo preset title and year tag
+            # if org_file_tag['title']:
 
             def needs_compression(music_tag_file):
                 bitrate = int(music_tag_file.audioFile['#bitrate'])

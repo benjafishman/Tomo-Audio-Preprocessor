@@ -24,4 +24,9 @@ class AudioFileTagController(object):
             self.audioFile['artwork'] = img_in.read()
         self.audioFile.save()
 
+    def get_audio_file_title_tag(self):
+        title = self.audioFile['title']
+
+    def get_audio_file_year_tag(self):
+        tag = self.audioFile['tag']
 
