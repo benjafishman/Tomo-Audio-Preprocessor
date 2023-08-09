@@ -92,9 +92,8 @@ class AudioFileMetaDataController(object):
 
         # check if the user has provided the title for the audio file
         elif data['input_title']:
-            # self.data['metadata']['input_title'] = data['input_title'] # TODO: do we need this? I don't think so
-            self.data['metadata']['title'] = data[
-                'input_title']  # slight duplication of data but i think it's justified
+            self.data['metadata']['title'] = data['input_title']  # slight duplication of data but I think it's
+            # justified
 
     def createTitleTag(self, f):
         # replace dashes with spaces remove apostrophes
