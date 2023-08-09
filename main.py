@@ -13,6 +13,7 @@ import subprocess
 import os
 from openpyxl import load_workbook
 import datetime
+import re
 
 year = datetime.date.today().year
 sg.theme('SandyBeach')  # Keep things interesting for your users
@@ -39,26 +40,25 @@ for row in sheet:
     if artist:
         artists.append(str(artist))
 
+
 # check for title tag/year
 
 def check_pre_set_tags(audio_file_path):
     r = {'title': None, 'year': None}
+    file_tags = music_tag.load_file(audio_file_path)
 
-    org_file_tag = music_tag.load_file(audio_file_path)
-    if org_file_tag['title']:
-        r['title'] = org_file_tag['title']
-        if org_file_tag['year']:
-            r['year'] = org_file_tag['year']
+    if file_tags['title'] and not re.findall("^\d{4}.", str(file_tags['title'])):
+        # check if the title is a real title and not a computer title
+        # x = re.findall("^\d{4}.", txt)  # assuming that a man made title would not start with at least 4 digits
+        r['title'] = file_tags['title']
+        if file_tags['year']:
+            r['year'] = file_tags['year']
         else:
             print("update gui values of title")
     else:
         print("nothing to update")
     print(r)
     return r
-
-
-    # check fo preset title and year tag
-    # if org_file_tag['title']:
 
 
 # setup gui
@@ -69,7 +69,7 @@ layout = [[sg.Text('Year', size=(3, 0)), sg.InputText(key='year', default_text=y
           [sg.Text('Title Type', size=(10, 1), font='Lucida', justification='left')],
           [sg.Radio('From file name', 'rd_title', key='from_file_name'),
            sg.Radio('Create file name', 'rd_title', key='from_input_title')],
-          #[sg.Text("Choose a file: "), sg.FileBrowse(key='full_file_path')],
+          # [sg.Text("Choose a file: "), sg.FileBrowse(key='full_file_path')],
           [sg.Input(key="-IN-", change_submits=True), sg.FileBrowse(key="full_file_path")],
           [sg.Text('Title', size=(3, 0)), sg.InputText(key='input_title')],
           [sg.Button('Generate'), sg.Button('Exit')]],
@@ -80,11 +80,16 @@ while True:  # Event Loop
     event, values = window.read()
     print(event, values)
     if values["-IN-"]:
-        r = check_pre_set_tags(values["-IN2-"])
+        r = check_pre_set_tags(values["-IN-"])
+        year = datetime.date.today().year
+        title = ""
         if r['year']:
-            window['year'].update(r['year'])
+            year = r['year']
+        window['year'].update(year)
         if r['title']:
-            window['input_title'].update(r['title'])
+            title = r['title']
+        window['input_title'].update(title)
+
     if event == sg.WIN_CLOSED or event == 'Exit':
         break
     if event == 'Generate':
@@ -131,6 +136,7 @@ while True:  # Event Loop
                 print(f'error {e}')
 
             org_file_tag = music_tag.load_file(data['src_file_info']['path'])
+
 
             # check fo preset title and year tag
             # if org_file_tag['title']:
