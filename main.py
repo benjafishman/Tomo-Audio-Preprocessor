@@ -24,6 +24,7 @@ settings_file_name = "settings.xlsx"
 settings_file_path = os.path.join(dir_path, settings_file_name)
 
 # load spread sheet
+# load spreadsheet
 wb = load_workbook(filename=settings_file_path)
 sheet = wb.active
 
