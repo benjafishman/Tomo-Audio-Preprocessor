@@ -31,7 +31,7 @@
 
 import re
 import os
-
+from utilities import is_parsha
 
 class AudioFileMetaDataController(object):
     data = {
@@ -248,7 +248,15 @@ class AudioFileMetaDataController(object):
                 title_list = self.data['metadata']['title'].split(' ')
                 if self.data['metadata']['album'] == 'Parshas Hashavuah':
                     parsha = title_list[0]  # perhaps we want to verify with a list of parshas if this is not true
-                    year = title_list[1]  # this should always be year
+                    year = title_list[1]
+                    if is_parsha(parsha):
+                        pass
+                    elif is_parsha(parsha + ' ' + title_list[1]):
+                        parsha = parsha.capitalize() + ' ' + title_list[1].capitalize()
+                        year = title_list[2]
+                    else:
+                        print("error: parsha not found")
+
                     # update title tag
                     content_in_parenthesis = '(' + parsha + ' ' + year + ')'
                     title_list.append(content_in_parenthesis)
