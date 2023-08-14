@@ -72,6 +72,7 @@ layout = [[sg.Text('Year', size=(3, 0)), sg.InputText(key='year', default_text=y
           # [sg.Text("Choose a file: "), sg.FileBrowse(key='full_file_path')],
           [sg.Input(key="-IN-", change_submits=True), sg.FileBrowse(key="full_file_path")],
           [sg.Text('Title', size=(3, 0)), sg.InputText(key='input_title')],
+          [sg.Checkbox('Compress Audio', default=False, key="compress")],
           [sg.Button('Generate'), sg.Button('Exit')]],
 
 window = sg.Window('Tomo File Preprocessor', layout)
@@ -151,7 +152,7 @@ while True:  # Event Loop
 
             # check if file needs compression FFMPEG
 
-            if int(org_file_tag['#bitrate']) > 48000:
+            if values["compress"]:
 
                 try:
                     print('compressing')
@@ -159,8 +160,8 @@ while True:  # Event Loop
                     src = data['src_file_info']['path']
                     dst = data['dst_file_info']['path']
 
-                    ffmpeg_downgrade_kbps = 'ffmpeg -i ' + '"' + src + '"' + ' -codec:a libmp3lame -b:a 48k' + ' ' + '"' + dst + '"'
-                    # ffmpeg command:            ffmpeg -i input.mp3 -codec:a libmp3lame -b:a 45k output.mp3
+                    ffmpeg_downgrade_kbps = 'ffmpeg -y -i ' + '"' + src + '"' + ' -codec:a libmp3lame -b:a 48k' + ' ' + '"' + dst + '"'
+                    # ffmpeg command:            ffmpeg -y -i input.mp3 -codec:a libmp3lame -b:a 45k output.mp3
                     print(ffmpeg_downgrade_kbps)
 
                     command_output = subprocess.check_output(ffmpeg_downgrade_kbps, shell=True)  # Run the command
@@ -170,7 +171,7 @@ while True:  # Event Loop
                     print(f'error {e}')
 
             else:
-
+                print("Not compressing!!!")
                 try:
                     print('copying file')
                     src = data['src_file_info']['path']
