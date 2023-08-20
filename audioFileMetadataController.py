@@ -33,6 +33,7 @@ import re
 import os
 from utilities import is_parsha
 
+
 class AudioFileMetaDataController(object):
     data = {
         'src_file_info': {
@@ -104,7 +105,8 @@ class AudioFileMetaDataController(object):
 
         print('CREATE TITLE TAG')
         print(f'base: {f}')
-        updated_title = re.sub('[^a-zA-Z0-9 \n\.]', ' ', f)
+        # updated_title = re.sub('[^a-zA-Z0-9 \n\.]', ' ', f)
+        updated_title = re.sub('[^a-zA-Z0-9 \n\'''.]', ' ', f)
         print(f'updated_title: {updated_title}')
         # get rid of initial space that was created if first char is '_'
         if updated_title[0] == ' ':
@@ -185,33 +187,15 @@ class AudioFileMetaDataController(object):
             # get the series value
 
             '''The following code might be overkill to get the series value
-            but I'm keeping it for now if it proves to be a more complicated process
-            series_number = re.search('-([0-9]*).mp3', self.metadata['base']).group(
-                 1)  # returns just the value between the
-             # demarcated characters
-             # strip the series number of any leading zeros
-            series_number = series_number.lstrip("0")  # that's a cool strip function
-            print(f'series is:{series_number}')
-            '''
+            but I'm keeping it for now if it proves to be a more complicated process '''
+            series_number = re.search('-([0-9]+)', self.data['src_file_info']['base']).group(
+                1)  # returns just the value between the
+            # demarcated characters
+            # strip the series number of any leading zeros
 
-            # assuming series is always at the end of the file name just before file extension
-            title_list = self.data['metadata']['title'].split(' ')  # create list of the file name in order
-            print(f'title_list: {title_list}')
-            # to replace the series number which is assumed to be at end of string
-            series_number = title_list[-1].lstrip("0")
-            updated_series_number = '#' + series_number  # add '#' to string and strip any leading zeros
-
-            # replace the series number in the title list with the above updated string
-            title_list[-1] = updated_series_number
-
-            # rejoin list to create the updated title tag
-            updated_title = ' '.join(title_list)
-            self.data['metadata']['title'] = updated_title
-
-            print(f'title tag with series is:{self.data["metadata"]["title"]}')
+            self.data['metadata']['title'] = self.data['metadata']['title'].replace(series_number, '#'+series_number.lstrip("0"))
 
         elif self.data['metadata']['album'] == 'Mishna Yomis':
-            print("HERE!!!!!!!!!!!!!")
             # add comma between perek and mishna
             # I think we're gonna have to hard code this one!
             # for now we'll just assume perek number is always the 3rd element of the string
@@ -235,7 +219,7 @@ class AudioFileMetaDataController(object):
             self.data['metadata']['title'] = updated_title
 
         elif self.data['metadata']['album'] in self.shiur_with_heb_year_in_end_of_title:
-            # certain albums require a the Hebrew year in parentheses at end of title
+            # certain albums require the Hebrew year in parentheses at end of title
             self.data['metadata']['title'] += '(' + self.data['metadata']['heb_year'] + ')'
 
         elif self.data['metadata']['album'] in self.shiur_with_year_prepended_to_file_name_appended_to_title:
