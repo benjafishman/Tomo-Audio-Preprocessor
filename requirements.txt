@@ -1,0 +1,11 @@
+altgraph==0.17.3
+et-xmlfile==1.1.0
+music-tag==0.4.3
+mutagen==1.46.0
+openpyxl==3.1.2
+pefile==2023.2.7
+pydub==0.25.1
+pyinstaller==5.13.0
+pyinstaller-hooks-contrib==2023.6
+PySimpleGUI @ file:///home/conda/feedstock_root/build_artifacts/pysimplegui_1655134221399/work
+pywin32-ctypes==0.2.2
