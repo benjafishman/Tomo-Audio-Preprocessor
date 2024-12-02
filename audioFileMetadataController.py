@@ -87,13 +87,14 @@ class AudioFileMetaDataController(object):
 
         print(f'is series: {self.data["metadata"]["is_series"]}')
 
-        # check if the user has not provided a file name rather opts to use the name of file already
+        # check if the user opts to use the name of file already for the title tag
         if data['from_file_name']:
             self.has_file_name = True
 
-        # check if the user has provided the title for the audio file
+        # check if the user has provided the title for the audio file then go with that and it should override filename
         elif data['input_title']:
             self.data['metadata']['title'] = data['input_title']  # slight duplication of data but I think it's
+            self.has_file_name = False
             # justified
 
     def createTitleTag(self, f):
@@ -170,7 +171,6 @@ class AudioFileMetaDataController(object):
         self.data['dst_file_info']['path'] = os.path.join(dirname, self.data['dst_file_info']['base'])
 
     def updateFileAndTitle(self):
-
         if self.has_file_name:
             # file has filename but needs title tag so we
             # create new filename by removing the initial underscore
@@ -188,12 +188,20 @@ class AudioFileMetaDataController(object):
 
             '''The following code might be overkill to get the series value
             but I'm keeping it for now if it proves to be a more complicated process '''
-            series_number = re.search('-([0-9]+)', self.data['src_file_info']['base']).group(
-                1)  # returns just the value between the
+            series_number = None
+            if self.data['metadata']['title']:
+                print('here 1.5')
+                series_number = re.search("#([0-9]+)", self.data['metadata']['title']).group(
+                    1)
+            else:
+                series_number = re.search('-([0-9]+)', self.data['src_file_info']['base']).group(
+                    1)
+                print('here 3')# returns just the value between the
             # demarcated characters
             # strip the series number of any leading zeros
 
-            self.data['metadata']['title'] = self.data['metadata']['title'].replace(series_number, '#'+series_number.lstrip("0"))
+            self.data['metadata']['title'] = self.data['metadata']['title'].replace(series_number,
+                                                                                    '#' + series_number.lstrip("0"))
 
         elif self.data['metadata']['album'] == 'Mishna Yomis':
             # add comma between perek and mishna
