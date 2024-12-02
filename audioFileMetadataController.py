@@ -190,13 +190,11 @@ class AudioFileMetaDataController(object):
             but I'm keeping it for now if it proves to be a more complicated process '''
             series_number = None
             if self.data['metadata']['title']:
-                print('here 1.5')
                 series_number = re.search("#([0-9]+)", self.data['metadata']['title']).group(
                     1)
             else:
                 series_number = re.search('-([0-9]+)', self.data['src_file_info']['base']).group(
                     1)
-                print('here 3')# returns just the value between the
             # demarcated characters
             # strip the series number of any leading zeros
 
