@@ -116,6 +116,7 @@ class AudioFileMetaDataController(object):
         # remove file extension
         updated_title = os.path.splitext(updated_title)[0]
         self.data['metadata']['title'] = updated_title
+        print("updates title is {}", self.data['metadata']['title'])
 
     def createFileName(self, title):
         print(f'create file name with title: {title}')
@@ -183,18 +184,25 @@ class AudioFileMetaDataController(object):
             self.createFileName(self.data['metadata']['title'])
 '''
         # add number sign to series and remove any zero that precedes a number
-        if self.data['metadata']['is_series']:
+        if self.data['metadata']['is_series'] and self.has_file_name:
             # get the series value
 
             '''The following code might be overkill to get the series value
             but I'm keeping it for now if it proves to be a more complicated process '''
             series_number = None
+            print("in series")
+            print("title is: ", self.data['metadata']['title'])
+
+            "Assumption: when title tag is created from the given filename then we are going to \
+            assume that the number is properly extracted and will be preceded by a space and if it is coming from\
+            a preset title tag then we'll assume it's already correct"
+
             if self.data['metadata']['title']:
-                series_number = re.search("#([0-9]+)", self.data['metadata']['title']).group(
+                series_number = re.search(" ([0-9]+)", self.data['metadata']['title']).group(
                     1)
-            else:
-                series_number = re.search('-([0-9]+)', self.data['src_file_info']['base']).group(
-                    1)
+            #else:
+            #    series_number = re.search(' ([0-9]+)', self.data['src_file_info']['base']).group(
+             #       1)
             # demarcated characters
             # strip the series number of any leading zeros
 

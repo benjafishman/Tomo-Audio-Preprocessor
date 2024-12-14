@@ -2,14 +2,13 @@
 # BS"D
 # Bentzion Fishman
 # 7/31/2022
-
-
+import subprocess
 import PySimpleGUI as sg
 import audioFileMetadataController as afc
 import audioFileTagController as aftc
 import audioFileHandler as fileHandler
 import music_tag
-import subprocess
+
 import os
 from openpyxl import load_workbook
 import datetime
@@ -67,12 +66,12 @@ layout = [[sg.Text('Year', size=(3, 0)), sg.InputText(key='year', default_text=y
            sg.Combo(['Rabbi ' + i for i in artists[1:]], default_value=artists[0], key='artist')],
           [sg.Checkbox('Is Series', default=False, key='is_series')],
           [sg.Text('Title Type', size=(10, 1), font='Lucida', justification='left')],
-          [sg.Radio('From file name', 'rd_title', key='from_file_name'),
+          [sg.Radio('From file name', 'rd_title', key='from_file_name', default=True),
            sg.Radio('Create file name', 'rd_title', key='from_input_title')],
           # [sg.Text("Choose a file: "), sg.FileBrowse(key='full_file_path')],
           [sg.Input(key="-IN-", change_submits=True), sg.FileBrowse(key="full_file_path")],
           [sg.Text('Title', size=(3, 0)), sg.InputText(key='input_title')],
-          [sg.Checkbox('Compress Audio', default=False, key="compress")],
+          [sg.Checkbox('Compress Audio (48 kbps)', default=False, key="compress")],
           [sg.Button('Generate'), sg.Button('Exit')]],
 
 window = sg.Window('Tomo File Preprocessor', layout)
@@ -130,12 +129,16 @@ while True:  # Event Loop
             needs_compression = False
 
             try:
+                print("here 0.00")
                 m.updateFileAndTitle()
+                print("here 0.0")
                 data = m.getMetadataDic()
+                print("here 0")
                 print(data)
             except Exception as e:
                 print(f'error {e}')
 
+            print("here 1")
             org_file_tag = music_tag.load_file(data['src_file_info']['path'])
 
 
@@ -191,6 +194,8 @@ while True:  # Event Loop
 
             except Exception as e:
                 print(f'error: {e}')
+
             print('done')
+            sg.popup('Done!')
 
 window.close()
